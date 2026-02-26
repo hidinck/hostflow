@@ -6,6 +6,9 @@ from pathlib import Path
 import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # ── SECURITY ─────────────────────────────────────────────
 SECRET_KEY = 'django-insecure-hostflow-change-this-in-production-abc123xyz'
