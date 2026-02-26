@@ -81,11 +81,10 @@ def send_email_otp(request):
             email = data.get('email')
 
             if not email:
-                return JsonResponse({'status': 'fail', 'error': 'No email provided'})
+                return JsonResponse({'status': 'fail', 'error': 'No email'})
 
             otp = str(random.randint(100000, 999999))
 
-            # Save OTP in session
             request.session['email'] = email
             request.session['email_otp'] = otp
             request.session['email_verified'] = False
@@ -96,25 +95,18 @@ def send_email_otp(request):
                     f'Your OTP is {otp}',
                     settings.EMAIL_HOST_USER,
                     [email],
-                    fail_silently=False,
+                    fail_silently=True,   # 🔥 IMPORTANT
                 )
                 print("OTP sent:", otp)
 
             except Exception as e:
                 print("EMAIL ERROR:", str(e))
-                return JsonResponse({
-                    'status': 'fail',
-                    'error': str(e)
-                })
 
             return JsonResponse({'status': 'success'})
 
         except Exception as e:
             print("GENERAL ERROR:", str(e))
-            return JsonResponse({
-                'status': 'fail',
-                'error': str(e)
-            })
+            return JsonResponse({'status': 'fail'})
 
 @csrf_exempt
 def verify_email_otp(request):
