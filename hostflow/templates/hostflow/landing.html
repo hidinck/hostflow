@@ -1,0 +1,338 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HostFlow – Smart Rental SaaS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+
+body{
+    background:#f8fafc; /* OFF WHITE */
+    color:#111827;
+    overflow-x:hidden;
+}
+
+/* ---------- LOADER ---------- */
+.loader{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:#f8fafc;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+.loader span{
+    width:50px;
+    height:50px;
+    border:5px solid #6366f1;
+    border-top:5px solid transparent;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+}
+@keyframes spin{100%{transform:rotate(360deg);}}
+
+/* ---------- NAVBAR ---------- */
+.navbar{
+    position:fixed;
+    width:100%;
+    padding:18px 8%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#ffffff;
+    border-bottom:1px solid #e5e7eb;
+    z-index:1000;
+}
+
+.logo{
+    font-size:20px;
+    font-weight:600;
+}
+
+.nav-links a{
+    margin-left:20px;
+    text-decoration:none;
+    color:#374151;
+    transition:0.3s;
+}
+.nav-links a:hover{color:#111827;}
+
+.btn{
+    padding:10px 20px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:500;
+    display:inline-block;
+}
+
+.btn-primary{
+    background:linear-gradient(135deg,#6366f1,#22c55e);
+    color:white;
+}
+.btn-outline{
+    border:1px solid #6366f1;
+    color:#6366f1;
+}
+
+/* ---------- HERO ---------- */
+.hero{
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:0 20px;
+}
+
+/* subtle background */
+.hero::before{
+    content:"";
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:url("https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=1600") center/cover;
+    opacity:0.05;
+    z-index:-1;
+}
+
+.hero h1{
+    font-size:64px;
+    font-weight:700;
+}
+
+.hero span{
+    background:linear-gradient(135deg,#6366f1,#22c55e);
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+.hero p{
+    margin-top:15px;
+    color:#6b7280;
+    font-size:18px;
+}
+
+.hero-buttons{
+    margin-top:30px;
+}
+
+.hero-buttons .btn{
+    margin:10px;
+}
+
+/* ---------- SECTION ---------- */
+.section{
+    padding:100px 8%;
+}
+.section h2{
+    text-align:center;
+    margin-bottom:60px;
+    font-size:32px;
+}
+
+/* ---------- CARDS ---------- */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:30px;
+}
+
+.card{
+    padding:30px;
+    border-radius:16px;
+    background:#ffffff;
+    border:1px solid #e5e7eb;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+    transition:0.3s;
+}
+.card:hover{
+    transform:translateY(-10px);
+    border-color:#6366f1;
+}
+
+/* ---------- DASHBOARD ---------- */
+.dashboard{
+    text-align:center;
+}
+
+.dashboard img{
+    width:100%;
+    max-width:900px;
+    border-radius:16px;
+    margin-top:30px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.1);
+    transition:0.4s;
+}
+.dashboard img:hover{
+    transform:scale(1.03);
+}
+
+/* ---------- PRICING ---------- */
+.pricing{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:30px;
+}
+
+.price-card{
+    padding:30px;
+    border-radius:16px;
+    text-align:center;
+    background:#ffffff;
+    border:1px solid #e5e7eb;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+    transition:0.3s;
+}
+.price-card:hover{
+    transform:translateY(-8px);
+}
+
+.price-card.featured{
+    border:2px solid #6366f1;
+    transform:scale(1.05);
+}
+
+.price{
+    font-size:36px;
+    margin:20px 0;
+}
+
+/* ---------- CTA ---------- */
+.cta{
+    text-align:center;
+    padding:80px 20px;
+    border-radius:20px;
+    background:linear-gradient(135deg,#6366f1,#22c55e);
+    color:white;
+}
+
+/* ---------- ANIMATION ---------- */
+.fade{
+    opacity:0;
+    transform:translateY(40px);
+    transition:1s;
+}
+.fade.show{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* ---------- MOBILE ---------- */
+@media(max-width:768px){
+    .hero h1{font-size:36px;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- Loader -->
+<div class="loader" id="loader"><span></span></div>
+
+<!-- Navbar -->
+<div class="navbar">
+    <div class="logo">🏠 HostFlow</div>
+    <div class="nav-links">
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+    </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+    <h1>Manage Rentals <span>Smarter</span></h1>
+    <p>All-in-one SaaS platform for landlords & tenants</p>
+
+    <div class="hero-buttons">
+        <a href="{% url 'register' %}" class="btn btn-primary">Start Free</a>
+        <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section fade">
+    <h2>Features</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>🏢 Property Management</h3>
+            <p>Manage properties, tenants and leases easily</p>
+        </div>
+        <div class="card">
+            <h3>💰 Payments</h3>
+            <p>Track rent payments and financial reports</p>
+        </div>
+        <div class="card">
+            <h3>🛠 Maintenance</h3>
+            <p>Handle tickets and tenant issues smoothly</p>
+        </div>
+    </div>
+</section>
+
+<!-- DASHBOARD -->
+<section class="section dashboard fade">
+    <h2>Dashboard Preview</h2>
+    <img src="{% static 'hostflow/dashboard.png' %}" alt="Dashboard">
+</section>
+
+<!-- PRICING -->
+<section class="section fade">
+    <h2>Pricing</h2>
+    <div class="pricing">
+
+        <div class="price-card">
+            <h3>Free</h3>
+            <div class="price">₹0</div>
+            <p>Basic features</p>
+        </div>
+
+        <div class="price-card featured">
+            <h3>Pro</h3>
+            <div class="price">₹499/mo</div>
+            <p>Advanced analytics</p>
+        </div>
+
+        <div class="price-card">
+            <h3>Enterprise</h3>
+            <div class="price">₹999/mo</div>
+            <p>All features</p>
+        </div>
+
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section">
+    <div class="cta">
+        <h2>Start Managing Today</h2>
+        <br>
+        <a href="{% url 'register' %}" class="btn btn-outline">Get Started</a>
+    </div>
+</section>
+
+<script>
+// Loader
+window.onload = () => {
+    document.getElementById('loader').style.display = 'none';
+};
+
+// Scroll animation
+const fades = document.querySelectorAll('.fade');
+window.addEventListener('scroll', () => {
+    fades.forEach(el => {
+        if(el.getBoundingClientRect().top < window.innerHeight - 100){
+            el.classList.add('show');
+        }
+    });
+});
+</script>
+
+</body>
+</html>

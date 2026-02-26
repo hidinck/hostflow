@@ -1,0 +1,41 @@
+{% extends 'hostflow/base.html' %}
+{% block title %}Units – {{ property.name }}{% endblock %}
+{% block page_title %}Units – {{ property.name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <a href="{% url 'property_list' %}" class="btn btn-outline-secondary btn-sm">← Back</a>
+  <a href="{% url 'unit_add' property.pk %}" class="btn btn-danger btn-sm">+ Add Unit</a>
+</div>
+<div class="card">
+  <table class="table table-hover mb-0">
+    <thead class="table-light"><tr>
+      <th>Unit #</th><th>Rent Type</th><th>Rent Amount</th><th>Status</th><th>Actions</th>
+    </tr></thead>
+    <tbody>
+    {% for unit in units %}
+    <tr>
+      <td>{{ unit.unit_number }}</td>
+      <td>{{ unit.get_rent_type_display }}</td>
+      <td>₹{{ unit.rent_amount }}</td>
+      <td>
+        {% if unit.status == 'occupied' %}
+          <span class="badge bg-success">Occupied</span>
+        {% else %}
+          <span class="badge bg-secondary">Vacant</span>
+        {% endif %}
+      </td>
+      <td>
+        <a href="{% url 'unit_edit' unit.pk %}" class="btn btn-outline-secondary btn-sm">Edit</a>
+        {% if unit.status == 'vacant' %}
+          <a href="{% url 'lease_add' unit.pk %}" class="btn btn-outline-success btn-sm">+ Lease</a>
+        {% endif %}
+        <a href="{% url 'add_tenant' %}" class="btn btn-outline-primary btn-sm">+ Tenant</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" class="text-center text-muted py-4">No units yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

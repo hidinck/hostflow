@@ -1,0 +1,296 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login | HostFlow</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+}
+
+/* LEFT SIDE */
+.left{
+    width:50%;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    color:white;
+    padding:70px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    position:relative;
+}
+
+.left::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1600&auto=format&fit=crop') center/cover;
+    opacity:0.18;
+}
+
+.left-content{
+    position:relative;
+    z-index:2;
+}
+
+.logo{
+    font-size:22px;
+    font-weight:600;
+    margin-bottom:20px;
+}
+
+.badge{
+    display:inline-block;
+    background:rgba(255,255,255,0.12);
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:12px;
+    margin-bottom:25px;
+}
+
+.title{
+    font-size:42px;
+    font-weight:600;
+    line-height:1.2;
+    margin-bottom:18px;
+}
+
+.desc{
+    color:#cbd5e1;
+    max-width:450px;
+    margin-bottom:28px;
+    font-size:15px;
+}
+
+.features{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    font-size:14px;
+    color:#e2e8f0;
+}
+
+/* RIGHT SIDE */
+.right{
+    width:50%;
+    background:#f9fafb;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* FORM */
+.form-wrapper{
+    width:100%;
+    max-width:460px;
+}
+
+/* TITLE */
+.form-wrapper h2{
+    font-size:26px;
+    font-weight:600;
+    color:#0f172a;
+    margin-bottom:6px;
+}
+
+/* SUBTEXT */
+.form-wrapper p{
+    font-size:16px;
+    color:#64748b;
+    margin-bottom:30px;
+}
+
+/* LABEL */
+.label{
+    font-size:14px;
+    font-weight:500;
+    color:#0f172a;
+    margin-bottom:6px;
+    display:block;
+}
+
+/* INPUT */
+.input{
+    width:100%;
+    height:48px;
+    padding:0 14px;
+    border-radius:10px;
+    border:1px solid #e5e7eb;
+    font-size:14px;
+    color:#111827;
+    margin-bottom:18px;
+    outline:none;
+    background:white;
+}
+
+.input:focus{
+    border-color:#3b82f6;
+    box-shadow:0 0 0 2px rgba(59,130,246,0.15);
+}
+
+/* PASSWORD ROW */
+.row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:6px;
+}
+
+.forgot{
+    font-size:14px;
+    color:#3b82f6;
+    text-decoration:none;
+}
+
+/* PASSWORD FIELD */
+.password-wrapper{
+    position:relative;
+}
+
+.eye{
+    position:absolute;
+    right:14px;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:16px;
+    color:#6b7280;
+    cursor:pointer;
+}
+
+/* BUTTON */
+.btn{
+    width:100%;
+    height:50px;
+    border:none;
+    border-radius:12px;
+    margin-top:15px;
+    font-size:16px;
+    font-weight:500;
+    color:white;
+    background:linear-gradient(90deg,#3b82f6,#0ea5e9);
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.btn:hover{
+    opacity:0.95;
+}
+
+/* FOOTER */
+.footer{
+    margin-top:18px;
+    font-size:14px;
+    text-align:center;
+    color:#64748b;
+}
+
+.footer a{
+    color:#3b82f6;
+    text-decoration:none;
+}
+
+/* MOBILE */
+@media(max-width:900px){
+    .left{
+        display:none;
+    }
+    .right{
+        width:100%;
+        padding:30px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="left">
+    <div class="left-content">
+
+        <div class="logo">🏠 HostFlow</div>
+
+        <div class="badge">Smart Property Management</div>
+
+        <div class="title">Manage Your Properties Effortlessly</div>
+
+        <div class="desc">
+            Track rent, manage tenants, handle maintenance, and grow your rental business—all in one place.
+        </div>
+
+        <div class="features">
+            <div>✔ Multi Property</div>
+            <div>✔ Tenant Tracking</div>
+            <div>✔ Rent Automation</div>
+            <div>✔ Maintenance Tickets</div>
+        </div>
+
+    </div>
+</div>
+
+<div class="right">
+
+    <div class="form-wrapper">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div style="padding: 12px; margin-bottom: 20px; border-radius: 8px; font-size: 14px; 
+                    {% if message.tags == 'error' %} background-color: #fee2e2; color: #b91c1c; border: 1px solid #fecaca;
+                    {% else %} background-color: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; {% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <h2>Welcome back</h2>
+        <p>Sign in to access your dashboard</p>
+
+        <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <label class="label">Username</label>
+        <input type="text" name="username" class="input" placeholder="Enter your username" required>
+
+        <div class="row">
+            <label class="label">Password</label>
+            <a href="#" class="forgot">Forgot password?</a>
+        </div>
+
+        <div class="password-wrapper">
+            <input type="password" name="password" id="password" class="input" required>
+            <span class="eye" onclick="togglePassword()">👁</span>
+        </div>
+
+        <button type="submit" class="btn">Sign in →</button>
+
+        </form>
+
+        <div class="footer">
+            New landlord? <a href="{% url 'register' %}">Create account</a>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function togglePassword(){
+    const input = document.getElementById("password");
+    input.type = input.type === "password" ? "text" : "password";
+}
+</script>
+
+</body>
+</html>

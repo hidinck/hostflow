@@ -1,0 +1,23 @@
+{% extends 'hostflow/base.html' %}
+{% block title %}Add Tenant{% endblock %}
+{% block page_title %}Add Tenant Account{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card p-4">
+      <p class="text-muted small mb-3">Create a login account for the tenant. Share credentials with them.</p>
+      <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label fw-medium">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-danger w-100">Create Tenant Account</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

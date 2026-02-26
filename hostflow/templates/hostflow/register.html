@@ -1,0 +1,207 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register | HostFlow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+        body{height:100vh;display:flex;}
+        .left{width:50%;background:linear-gradient(135deg,#0f172a,#1e293b);color:white;padding:70px;display:flex;flex-direction:column;justify-content:center;position:relative;}
+        .left::before{content:"";position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c') center/cover;opacity:0.18;}
+        .left-content{position:relative;z-index:2;}
+        .logo{font-size:22px;font-weight:600;margin-bottom:20px;}
+        .title{font-size:42px;font-weight:600;margin-bottom:15px;}
+        .desc{color:#cbd5e1;max-width:450px;margin-bottom:25px;}
+        .features{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:14px;}
+        .right{width:50%;background:#f9fafb;display:flex;justify-content:center;align-items:center;}
+        .form-wrapper{width:100%;max-width:420px;}
+        h2{font-size:26px;font-weight:600;color:#0f172a;}
+        .sub{color:#64748b;margin-bottom:25px;}
+        .label{font-size:14px;font-weight:500;margin-bottom:6px;display:block;}
+        .input{width:100%;height:48px;padding:0 14px;border-radius:10px;border:1px solid #e5e7eb;margin-bottom:18px;font-size:14px;outline:none;background:white;}
+        .input:focus{border-color:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,0.15);}
+        .row{display:flex;gap:10px;align-items:center;margin-bottom:12px;}
+        .row .input{margin-bottom:0;flex:1;}
+        .btn{height:48px;padding:0 18px;border:none;border-radius:10px;background:#4f46e5;color:white;font-size:14px;cursor:pointer;transition:0.2s;}
+        .btn:hover{opacity:0.9;}
+        .main-btn{width:100%;height:50px;border:none;border-radius:12px;margin-top:10px;font-size:16px;font-weight:500;color:white;background:linear-gradient(90deg,#3b82f6,#0ea5e9);cursor:pointer;}
+        .otp-box{display:none;margin-bottom:18px;}
+        .otp-inputs{display:flex;gap:8px;justify-content:center;margin:12px 0;}
+        .otp{width:40px;height:45px;border:1px solid #e5e7eb;border-radius:8px;text-align:center;font-size:16px;}
+        .otp-actions{display:flex;justify-content:center;gap:10px;margin-bottom:10px;}
+        .timer{text-align:center;font-size:13px;color:#64748b;}
+        .status{text-align:center;font-size:13px;margin-top:5px;}
+        .password-wrapper{position:relative;}
+        .password-wrapper .input{padding-right:45px;}
+        .eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:#64748b;}
+        .footer{text-align:center;margin-top:18px;font-size:14px;color:#64748b;}
+        .footer a{color:#3b82f6;text-decoration:none;}
+        @media(max-width:900px){.left{display:none;}.right{width:100%;padding:20px;}}
+        
+        /* Message Styling */
+        .messages { list-style: none; margin-bottom: 20px; }
+        .alert { padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 10px; }
+        .alert-error { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .alert-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    </style>
+</head>
+<body>
+
+<div class="left">
+    <div class="left-content">
+        <div class="logo">🏠 HostFlow</div>
+        <div class="title">Manage Your Properties Effortlessly</div>
+        <div class="desc">Track rent, manage tenants, handle maintenance, and grow your rental business—all in one place.</div>
+        <div class="features">
+            <div>✔ Multi Property</div>
+            <div>✔ Tenant Tracking</div>
+            <div>✔ Rent Automation</div>
+            <div>✔ Maintenance Tickets</div>
+        </div>
+    </div>
+</div>
+
+<div class="right">
+    <div class="form-wrapper">
+        <h2>Create account</h2>
+        <p class="sub">Start managing your rentals</p>
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <form method="POST" id="regForm">
+            {% csrf_token %}
+            
+            <label class="label">Username</label>
+            <input class="input" name="username" required>
+
+            <label class="label">Email</label>
+            <div class="row">
+                <input class="input" id="email" name="email" type="email" required>
+                <button type="button" id="emailBtn" class="btn" onclick="sendEmailOtp()">Send OTP</button>
+            </div>
+
+            <div class="otp-box" id="emailOtpBox">
+                <div class="otp-inputs" id="emailOtpInputs">
+                    <input class="otp" maxlength="1" oninput="next(this)" onkeydown="back(event,this)">
+                    <input class="otp" maxlength="1" oninput="next(this)" onkeydown="back(event,this)">
+                    <input class="otp" maxlength="1" oninput="next(this)" onkeydown="back(event,this)">
+                    <input class="otp" maxlength="1" oninput="next(this)" onkeydown="back(event,this)">
+                    <input class="otp" maxlength="1" oninput="next(this)" onkeydown="back(event,this)">
+                    <input class="otp" maxlength="1" oninput="next(this)" onkeydown="back(event,this)">
+                </div>
+                <div class="otp-actions">
+                    <button type="button" id="emailVerifyBtn" class="btn" onclick="verifyEmailOtp()">Verify</button>
+                    <button type="button" id="emailResend" class="btn" onclick="sendEmailOtp()" disabled>Resend</button>
+                </div>
+                <div class="timer" id="emailTimer"></div>
+                <div id="emailStatus" class="status"></div>
+            </div>
+
+            <label class="label">Password</label>
+            <div class="password-wrapper">
+                <input type="password" name="password" id="password" class="input" required>
+                <span class="eye" onclick="togglePassword()">👁</span>
+            </div>
+
+            <button type="submit" class="main-btn">Create Account</button>
+        </form>
+
+        <div class="footer">
+            Already have an account? <a href="{% url 'login' %}">Login</a>
+        </div>
+    </div>
+</div>
+
+<script>
+let isVerified = false;
+
+function togglePassword(){
+    const input=document.getElementById("password");
+    input.type=input.type==="password"?"text":"password";
+}
+
+function csrf(){return document.querySelector('[name=csrfmiddlewaretoken]').value;}
+function next(el){if(el.value && el.nextElementSibling) el.nextElementSibling.focus();}
+function back(e,el){if(e.key==="Backspace" && !el.value && el.previousElementSibling){el.previousElementSibling.focus();}}
+
+function getOtp(containerId){
+    let otp="";
+    document.querySelectorAll(`#${containerId} .otp`).forEach(i=>otp+=i.value);
+    return otp;
+}
+
+function startTimer(type){
+    let t=30;
+    let timerEl = document.getElementById(type+"Timer");
+    let resendBtn = document.getElementById(type+"Resend");
+    let id=setInterval(()=>{
+        timerEl.innerText="Resend in "+t+"s";
+        t--;
+        if(t<0){
+            clearInterval(id);
+            resendBtn.disabled=false;
+            timerEl.innerText="";
+        }
+    },1000);
+}
+
+function sendEmailOtp(){
+    const emailVal = document.getElementById("email").value;
+    if(!emailVal) { alert("Please enter email"); return; }
+    fetch("/send-email-otp/",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","X-CSRFToken":csrf()},
+        body:JSON.stringify({email:emailVal})
+    })
+    .then(r=>r.json())
+    .then(d=>{
+        if(d.status === 'success'){
+            document.getElementById("emailOtpBox").style.display="block";
+            document.getElementById("emailResend").disabled=true;
+            startTimer("email");
+        } else {
+            alert("Error: " + (d.message || "Could not send OTP"));
+        }
+    });
+}
+
+function verifyEmailOtp(){
+    fetch("/verify-email-otp/",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","X-CSRFToken":csrf()},
+        body:JSON.stringify({otp:getOtp('emailOtpInputs')})
+    })
+    .then(r=>r.json())
+    .then(d=>{
+        const status = document.getElementById("emailStatus");
+        if(d.status === "success"){
+            status.innerText="Verified ✓";
+            status.style.color = "green";
+            isVerified = true;
+        } else {
+            status.innerText="Invalid OTP";
+            status.style.color = "red";
+            isVerified = false;
+        }
+    });
+}
+
+// Prevent form submission if not verified
+document.getElementById('regForm').onsubmit = function(e) {
+    if(!isVerified) {
+        e.preventDefault();
+        alert("Please verify your email first!");
+    }
+};
+</script>
+</body>
+</html>

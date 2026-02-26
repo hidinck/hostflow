@@ -1,0 +1,56 @@
+{% extends 'hostflow/base.html' %}
+{% block title %}Pay Rent{% endblock %}
+{% block page_title %}Pay Rent{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card p-4 text-center">
+      <h5 class="fw-bold mb-1">Rent Payment</h5>
+      <p class="text-muted small">Unit: {{ payment.lease.unit }}</p>
+      <div class="display-6 fw-bold text-success mb-1">₹{{ payment.amount_due }}</div>
+      {% if payment.late_fee > 0 %}
+        <p class="text-danger small">+ ₹{{ payment.late_fee }} late fee</p>
+      {% endif %}
+      <p class="text-muted small mb-4">Due: {{ payment.due_date }}</p>
+      <button id="rzp-btn" class="btn btn-danger btn-lg w-100 fw-bold">
+        Pay with Razorpay
+      </button>
+      <p class="text-muted small mt-3">Secure payment powered by Razorpay</p>
+    </div>
+  </div>
+</div>
+
+<form id="rzp-form" method="POST" action="{% url 'razorpay_callback' %}">
+  {% csrf_token %}
+  <input type="hidden" name="razorpay_order_id" id="rzp_order_id">
+  <input type="hidden" name="razorpay_payment_id" id="rzp_payment_id">
+  <input type="hidden" name="razorpay_signature" id="rzp_signature">
+</form>
+
+{% block extra_js %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+  key: "{{ razorpay_key }}",
+  amount: "{{ amount_paise }}",
+  currency: "INR",
+  name: "HostFlow",
+  description: "Rent Payment",
+  order_id: "{{ order.id }}",
+  handler: function(response) {
+    document.getElementById('rzp_order_id').value   = response.razorpay_order_id;
+    document.getElementById('rzp_payment_id').value = response.razorpay_payment_id;
+    document.getElementById('rzp_signature').value  = response.razorpay_signature;
+    document.getElementById('rzp-form').submit();
+  },
+  prefill: { name: "{{ user.username }}", email: "{{ user.email }}" },
+  theme: { color: "#e94560" }
+};
+document.getElementById('rzp-btn').onclick = function(e) {
+  e.preventDefault();
+  var rzp = new Razorpay(options);
+  rzp.open();
+};
+</script>
+{% endblock %}
+{% endblock %}

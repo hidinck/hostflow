@@ -1,0 +1,122 @@
+{% extends 'hostflow/base.html' %}
+{% block title %}Leases{% endblock %}
+{% block page_title %}Leases{% endblock %}
+
+{% block content %}
+
+<!-- TOP BAR -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+  <h6 class="text-muted mb-0">
+    {{ leases|length }} Lease{{ leases|length|pluralize }}
+  </h6>
+
+  <div>
+    <a href="{% url 'add_tenant' %}" class="btn btn-outline-dark btn-sm me-2">
+      + Add Tenant
+    </a>
+  </div>
+
+</div>
+
+<!-- TABLE CARD -->
+<div class="card p-0">
+
+  <table class="table align-middle mb-0 lease-table">
+
+    <thead>
+      <tr>
+        <th>Tenant</th>
+        <th>Unit</th>
+        <th>Property</th>
+        <th>Duration</th>
+        <th>Status</th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+    {% for lease in leases %}
+
+    <tr>
+
+      <!-- TENANT -->
+      <td>
+        <div class="fw-semibold">{{ lease.tenant.username }}</div>
+        <div class="small text-muted">Tenant</div>
+      </td>
+
+      <!-- UNIT -->
+      <td>
+        <span class="badge bg-light text-dark">
+          {{ lease.unit.unit_number }}
+        </span>
+      </td>
+
+      <!-- PROPERTY -->
+      <td>
+        {{ lease.unit.property.name }}
+      </td>
+
+      <!-- DATES -->
+      <td>
+        <div class="small">{{ lease.start_date }}</div>
+        <div class="small text-muted">
+          → {{ lease.end_date }}
+        </div>
+
+        {% if lease.is_expiring_soon %}
+          <span class="badge bg-warning text-dark mt-1">
+            Expiring Soon
+          </span>
+        {% endif %}
+      </td>
+
+      <!-- STATUS -->
+      <td>
+        {% if lease.status == 'active' %}
+          <span class="status-pill active">Active</span>
+        {% elif lease.status == 'terminated' %}
+          <span class="status-pill danger">Terminated</span>
+        {% else %}
+          <span class="status-pill secondary">
+            {{ lease.get_status_display }}
+          </span>
+        {% endif %}
+      </td>
+
+      <!-- ACTIONS -->
+      <td class="text-end">
+
+        <a href="{% url 'payment_add' lease.pk %}"
+           class="btn btn-sm btn-outline-success">
+           + Payment
+        </a>
+
+        {% if lease.status == 'active' %}
+        <a href="{% url 'lease_terminate' lease.pk %}"
+           class="btn btn-sm btn-outline-danger">
+           Terminate
+        </a>
+        {% endif %}
+
+      </td>
+
+    </tr>
+
+    {% empty %}
+    <tr>
+      <td colspan="6" class="text-center py-5 text-muted">
+        No leases found
+      </td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+
+  </table>
+
+</div>
+
+{% endblock %}

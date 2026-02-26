@@ -1,0 +1,18 @@
+{% extends 'hostflow/base.html' %}
+{% block title %}Notifications{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+{% block content %}
+<div class="card">
+  {% for n in notifications %}
+    <div class="p-3 border-bottom {% if not n.is_read %}bg-light{% endif %}">
+      <div class="d-flex justify-content-between">
+        <strong>{{ n.title }}</strong>
+        <span class="text-muted small">{{ n.created_at|date:"d M Y H:i" }}</span>
+      </div>
+      <p class="mb-0 small text-muted">{{ n.message }}</p>
+    </div>
+  {% empty %}
+    <div class="text-center text-muted py-5">No notifications.</div>
+  {% endfor %}
+</div>
+{% endblock %}

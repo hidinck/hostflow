@@ -1,0 +1,68 @@
+{% extends 'hostflow/base.html' %}
+{% block title %}Reports{% endblock %}
+{% block page_title %}Reports & Analytics{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card p-3 text-center">
+      <div class="text-muted small">Total Collected</div>
+      <div class="fs-2 fw-bold text-success">₹{{ total_collected }}</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3 text-center">
+      <div class="text-muted small">Overdue Payments</div>
+      <div class="fs-2 fw-bold text-danger">{{ total_overdue }}</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3 text-center">
+      <div class="text-muted small">Occupancy Rate</div>
+      <div class="fs-2 fw-bold text-primary">{{ occupancy_rate }}%</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-7">
+    <div class="card p-4">
+      <h6 class="fw-bold mb-3">Monthly Income (Last 6 Months)</h6>
+      <canvas id="incomeChart" height="120"></canvas>
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="card p-4">
+      <h6 class="fw-bold mb-3">Revenue by Property</h6>
+      <canvas id="propChart" height="160"></canvas>
+    </div>
+  </div>
+</div>
+
+<a href="{% url 'export_csv' %}" class="btn btn-outline-success">⬇ Export Payments CSV</a>
+
+{% block extra_js %}
+<script>
+var monthly = {{ monthly_data|safe }};
+var props   = {{ prop_revenue|safe }};
+
+new Chart(document.getElementById('incomeChart'), {
+  type: 'bar',
+  data: {
+    labels: monthly.map(d => d.month),
+    datasets: [{ label: 'Income (₹)', data: monthly.map(d => d.total),
+                 backgroundColor: '#e9456088', borderColor: '#e94560', borderWidth:1 }]
+  },
+  options: { plugins: { legend: { display: false } } }
+});
+
+new Chart(document.getElementById('propChart'), {
+  type: 'doughnut',
+  data: {
+    labels: props.map(p => p.name),
+    datasets: [{ data: props.map(p => p.revenue),
+                 backgroundColor: ['#e94560','#0d6efd','#198754','#fd7e14','#6f42c1'] }]
+  }
+});
+</script>
+{% endblock %}
+{% endblock %}

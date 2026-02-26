@@ -1,0 +1,178 @@
+{% extends 'hostflow/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- KPI Cards -->
+<div class="row g-4 mb-4">
+
+  <div class="col-md-3">
+    <div class="card stat-card blue p-4">
+      <div class="d-flex justify-content-between">
+        <div>
+          <div class="small">Total Properties</div>
+          <div class="fs-2 fw-bold">{{ total_properties }}</div>
+        </div>
+        <div class="fs-2">🏢</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card stat-card green p-4">
+      <div class="d-flex justify-content-between">
+        <div>
+          <div class="small">Monthly Income</div>
+          <div class="fs-2 fw-bold">₹{{ monthly_income }}</div>
+        </div>
+        <div class="fs-2">💰</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card stat-card orange p-4">
+      <div class="d-flex justify-content-between">
+        <div>
+          <div class="small">Active Tenants</div>
+          <div class="fs-2 fw-bold">{{ active_tenants }}</div>
+        </div>
+        <div class="fs-2">👥</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card stat-card red p-4">
+      <div class="d-flex justify-content-between">
+        <div>
+          <div class="small">Overdue Payments</div>
+          <div class="fs-2 fw-bold">{{ overdue_payments }}</div>
+        </div>
+        <div class="fs-2">⚠️</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Secondary Stats -->
+<div class="row g-4 mb-4">
+
+  <div class="col-md-3">
+    <div class="card p-4 text-center">
+      <div class="text-muted small">Occupied Units</div>
+      <div class="fs-3 fw-bold text-success">{{ occupied_units }} / {{ total_units }}</div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card p-4 text-center">
+      <div class="text-muted small">Vacant Units</div>
+      <div class="fs-3 fw-bold text-secondary">{{ vacant_units }}</div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card p-4 text-center">
+      <div class="text-muted small">Open Tickets</div>
+      <div class="fs-3 fw-bold text-warning">{{ open_tickets }}</div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card p-4 text-center">
+      <div class="text-muted small">Expiring Leases</div>
+      <div class="fs-3 fw-bold text-danger">{{ expiring_leases|length }}</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="row g-4">
+
+  <!-- Recent Payments -->
+  <div class="col-md-7">
+    <div class="card p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6>Recent Payments</h6>
+        <a href="{% url 'payment_list' %}" class="btn btn-sm btn-outline-primary">View all</a>
+      </div>
+
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Tenant</th>
+            <th>Unit</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for p in recent_payments %}
+          <tr>
+            <td>{{ p.lease.tenant.username }}</td>
+            <td>{{ p.lease.unit.unit_number }}</td>
+            <td class="fw-semibold">₹{{ p.amount_due }}</td>
+            <td>
+              {% if p.status == 'paid' %}
+                <span class="badge bg-success">Paid</span>
+              {% elif p.status == 'overdue' %}
+                <span class="badge bg-danger">Overdue</span>
+              {% elif p.status == 'partial' %}
+                <span class="badge bg-warning text-dark">Partial</span>
+              {% else %}
+                <span class="badge bg-secondary">Pending</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="text-center text-muted py-3">
+              No payments yet
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+
+      </table>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <div class="col-md-5">
+    <div class="card p-4">
+      <div class="d-flex justify-content-between mb-3">
+        <h6>🔔 Notifications</h6>
+        <a href="{% url 'notification_list' %}" class="btn btn-sm btn-outline-secondary">View all</a>
+      </div>
+
+      {% for n in notifications %}
+        <div class="notification-box p-3 mb-2 small">
+          <strong>{{ n.title }}</strong><br>
+          {{ n.message|truncatechars:80 }}
+        </div>
+      {% empty %}
+        <p class="text-muted small">No new notifications</p>
+      {% endfor %}
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Expiring leases -->
+{% if expiring_leases %}
+<div class="card p-3 mt-4">
+  <strong class="text-warning">⚠️ Leases expiring soon</strong><br><br>
+  {% for lease in expiring_leases %}
+    <span class="badge bg-warning text-dark me-1">
+      {{ lease.tenant.username }} – {{ lease.unit }} ({{ lease.end_date }})
+    </span>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

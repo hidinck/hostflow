@@ -1,0 +1,92 @@
+{% extends 'hostflow/base.html' %}
+{% block title %}Properties{% endblock %}
+{% block page_title %}My Properties{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="text-muted small">
+    {{ properties|length }} propert{{ properties|length|pluralize:"y,ies" }}
+  </div>
+
+  <a href="{% url 'property_add' %}" class="btn btn-primary px-3">
+    <i class="bi bi-plus-lg me-1"></i> Add Property
+  </a>
+</div>
+
+<div class="row g-4">
+
+{% for prop in properties %}
+<div class="col-md-4">
+
+  <div class="property-card p-4">
+
+    <!-- TITLE -->
+    <h5 class="fw-semibold mb-1">{{ prop.name }}</h5>
+
+    <!-- LOCATION -->
+    <div class="text-muted small mb-2">
+      <i class="bi bi-geo-alt me-1"></i>{{ prop.city }}
+    </div>
+
+    <div class="text-muted small mb-3">
+      {{ prop.address|truncatechars:50 }}
+    </div>
+
+    <!-- STATS -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+      <div>
+        <div class="fw-bold fs-5">{{ prop.units.count }}</div>
+        <div class="small text-muted">Units</div>
+      </div>
+
+      <div class="text-end">
+        <div class="fw-bold fs-5 text-success">{{ prop.occupancy_rate }}%</div>
+        <div class="small text-muted">Occupancy</div>
+      </div>
+
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress mb-3" style="height:6px;">
+      <div class="progress-bar bg-success" style="width: {{ prop.occupancy_rate }}%"></div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="d-flex gap-2">
+
+      <a href="{% url 'unit_list' prop.pk %}"
+         class="btn btn-outline-dark btn-sm flex-fill">
+         Units
+      </a>
+
+      <a href="{% url 'property_edit' prop.pk %}"
+         class="btn btn-outline-secondary btn-sm">
+         <i class="bi bi-pencil"></i>
+      </a>
+
+      <a href="{% url 'property_delete' prop.pk %}"
+         class="btn btn-outline-danger btn-sm">
+         <i class="bi bi-trash"></i>
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
+{% empty %}
+
+<div class="col-12 text-center py-5">
+  <h5 class="text-muted">No properties yet</h5>
+  <a href="{% url 'property_add' %}" class="btn btn-primary mt-2">
+    Add your first property
+  </a>
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

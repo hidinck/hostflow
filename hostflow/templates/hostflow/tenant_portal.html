@@ -1,0 +1,134 @@
+{% extends 'hostflow/base.html' %}
+
+{% block title %}My Portal{% endblock %}
+{% block page_title %}Tenant Portal{% endblock %}
+
+{% block content %}
+
+<div class="row g-3">
+
+  <!-- ================== LEASE ================== -->
+  <div class="col-md-6">
+    <div class="card p-4">
+
+      <h6 class="fw-bold mb-3">My Lease</h6>
+
+      {% for lease in leases %}
+        <div class="mb-3">
+
+          <p class="mb-1"><strong>Unit:</strong> {{ lease.unit }}</p>
+          <p class="mb-1"><strong>Property:</strong> {{ lease.unit.property.name }}</p>
+          <p class="mb-1"><strong>Start:</strong> {{ lease.start_date }}</p>
+
+          <p class="mb-0">
+            <strong>End:</strong> {{ lease.end_date }}
+
+            {% if lease.is_expiring_soon %}
+              <span class="badge bg-warning text-dark ms-1">
+                Expiring Soon
+              </span>
+            {% endif %}
+          </p>
+
+        </div>
+      {% empty %}
+        <p class="text-muted">No active lease found.</p>
+      {% endfor %}
+
+    </div>
+  </div>
+
+
+  <!-- ================== PAYMENTS ================== -->
+  <div class="col-md-6">
+    <div class="card p-4">
+
+      <h6 class="fw-bold mb-3">Payments</h6>
+
+      {% for p in payments|slice:":5" %}
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+          <!-- LEFT -->
+          <div>
+            <div class="fw-medium">₹{{ p.amount_due }}</div>
+            <div class="text-muted small">Due {{ p.due_date }}</div>
+
+            {% if p.late_fee > 0 %}
+              <div class="text-danger small">
+                Late Fee: ₹{{ p.late_fee }}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- RIGHT -->
+          <div class="d-flex align-items-center gap-2">
+
+            {% if p.status == 'paid' %}
+              <span class="badge bg-success">Paid</span>
+
+            {% else %}
+              <a href="{% url 'pay_rent' p.pk %}" class="btn btn-success btn-sm">
+                Pay Now
+              </a>
+            {% endif %}
+
+            <a href="{% url 'download_receipt' p.pk %}" class="btn btn-outline-secondary btn-sm">
+              Receipt
+            </a>
+
+          </div>
+
+        </div>
+
+      {% empty %}
+        <p class="text-muted">No payment records.</p>
+      {% endfor %}
+
+    </div>
+  </div>
+
+
+  <!-- ================== MAINTENANCE ================== -->
+  <div class="col-12">
+    <div class="card p-4">
+
+      <div class="d-flex justify-content-between mb-3">
+        <h6 class="fw-bold">Maintenance Requests</h6>
+
+        <a href="{% url 'submit_ticket' %}" class="btn btn-outline-danger btn-sm">
+          + Submit Request
+        </a>
+      </div>
+
+      {% for ticket in tickets %}
+        <div class="d-flex justify-content-between py-2 border-bottom">
+
+          <div>
+            <a href="{% url 'ticket_detail' ticket.pk %}">
+              {{ ticket.title }}
+            </a>
+            <span class="text-muted small ms-2">
+              {{ ticket.created_at|date:"d M Y" }}
+            </span>
+          </div>
+
+          {% if ticket.status == 'open' %}
+            <span class="badge bg-primary">Open</span>
+          {% elif ticket.status == 'in_progress' %}
+            <span class="badge bg-info text-dark">In Progress</span>
+          {% else %}
+            <span class="badge bg-success">Resolved</span>
+          {% endif %}
+
+        </div>
+
+      {% empty %}
+        <p class="text-muted">No requests submitted.</p>
+      {% endfor %}
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
