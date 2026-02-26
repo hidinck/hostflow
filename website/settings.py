@@ -1,21 +1,25 @@
 """
-HostFlow – Django Settings (Production Ready for OTP)
+HostFlow – Django Settings (Production Ready for Render)
 """
 
 from pathlib import Path
 import os
+import dj_database_url
 
+# ── BASE DIR ────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent
-STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# ── SECURITY ─────────────────────────────────────────────
-SECRET_KEY = 'django-insecure-hostflow-change-this-in-production-abc123xyz'
+# ── SECURITY ────────────────────────────────────────────
+SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-secret-key')
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['.onrender.com']
+
+
+# CSRF for Render (IMPORTANT)
+CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
 
 
 # ── INSTALLED APPS ──────────────────────────────────────
@@ -34,6 +38,8 @@ INSTALLED_APPS = [
 # ── MIDDLEWARE ──────────────────────────────────────────
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
 
@@ -47,7 +53,9 @@ MIDDLEWARE = [
 ]
 
 
+# ── URLS / WSGI ─────────────────────────────────────────
 ROOT_URLCONF = 'website.urls'
+WSGI_APPLICATION = 'website.wsgi.application'
 
 
 # ── TEMPLATES ───────────────────────────────────────────
@@ -69,19 +77,11 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = 'website.wsgi.application'
-
-
-# ── DATABASE ────────────────────────────────────────────
+# ── DATABASE (Render PostgreSQL) ────────────────────────
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'hostflow_db',
-        'USER': 'postgres',
-        'PASSWORD': 'Hidin@123',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.parse(
+        os.environ.get("DATABASE_URL")
+    )
 }
 
 
@@ -108,10 +108,19 @@ USE_I18N = True
 USE_TZ = True
 
 
-# ── STATIC & MEDIA ──────────────────────────────────────
+# ── STATIC FILES ────────────────────────────────────────
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "hostflow/static"]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = [
+    BASE_DIR / "hostflow/static"
+]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+# ── MEDIA FILES ─────────────────────────────────────────
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -119,32 +128,34 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# ── EMAIL CONFIG (REAL OTP - GMAIL) ─────────────────────
+# ── EMAIL CONFIG (OTP - Gmail SMTP) ─────────────────────
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-# ⚠️ REPLACE THESE
-EMAIL_HOST_USER = 'hostfloww@gmail.com'
-EMAIL_HOST_PASSWORD = 'vgdvejxeppjblsza'
+EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
 
-# DEFAULT FROM EMAIL
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
-# ── OTP SETTINGS (NEW) ──────────────────────────────────
+# ── OTP SETTINGS ────────────────────────────────────────
 OTP_EXPIRY_SECONDS = 300   # 5 minutes
-OTP_RESEND_LIMIT = 3       # max resend attempts
+OTP_RESEND_LIMIT = 3
 
 
-# ── SESSION SETTINGS (FOR OTP STORAGE) ──────────────────
+# ── SESSION SETTINGS ────────────────────────────────────
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 3600  # 1 hour
 
 
-# ── RAZORPAY ───────────────────────────────────────────
-RAZORPAY_KEY_ID = 'rzp_test_YOUR_KEY_ID'
-RAZORPAY_KEY_SECRET = 'YOUR_KEY_SECRET'
+# ── SECURITY (Render HTTPS) ─────────────────────────────
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
+
+# ── RAZORPAY ───────────────────────────────────────────
+RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID')
+RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET')
